@@ -1,7 +1,8 @@
-﻿using Constracts.Common.Interface;
+﻿using AutoMapper;
+using Constracts.Common.Interface;
 using Infrastructure.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using MySqlConnector;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Product.API.Persistence;
@@ -18,7 +19,34 @@ public static class ServiceExtensions
         services.AddEndpointsApiExplorer();
         services.ConfigureProductDbContext(configuration);
         services.AddInfrastructureServices();
+
+        // Configure Swagger/OpenAPI
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Ecom API",
+                Version = "v1",
+                Description = "",
+                Contact = new OpenApiContact
+                {
+                    Name = "Chuong Dang",
+                    Email = "hakoru1a@gmail.com",
+                }
+            });
+        });
         return services;
+    }
+    private static IMapper AddMapper ()
+    {
+        var mapperConfig = new MapperConfiguration(mc =>
+        {
+            mc.AddProfile(new MapperProfile());
+        });
+
+        return mapperConfig.CreateMapper();
+
     }
     private static IServiceCollection ConfigureProductDbContext(this IServiceCollection services, IConfiguration configuration)
     {
@@ -39,6 +67,7 @@ public static class ServiceExtensions
     {
         return services.AddScoped(typeof(IRepositoryBaseAsync<,,>), typeof(RepositoryBaseAsync<,,>))
                       .AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>))
-                      .AddScoped<IProductRepository, ProductRepository>();
+                      .AddScoped<IProductRepository, ProductRepository>().AddSingleton(AddMapper());
     }
+
 }
