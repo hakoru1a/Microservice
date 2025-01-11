@@ -1,3 +1,5 @@
+using Basket.API.Extensions;
+using Basket.API.Extentions;
 using Common.Logging;
 using Serilog;
 
@@ -8,26 +10,15 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog(SeriLogger.Configure);
-    // Add services to the container.
-
-    builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
+    
+    builder.Host.AddAppConfigurations();
+    builder.Services.AddInfrastructure(builder.Configuration);
 
     var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
-
-    app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
+    app.UseInfrastructure();
+    
     app.MapControllers();
-
     app.Run();
 
 }

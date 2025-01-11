@@ -47,6 +47,13 @@ services:
       context: .
       dockerfile: Customer.API/Dockerfile
 
+  basket.api:
+    image: ${DOCKER_REGISTRY-}customer.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: basket.api
+    build:
+      context: .
+      dockerfile: Basket.API/Dockerfile
+
 #network section
 networks:
   default:
