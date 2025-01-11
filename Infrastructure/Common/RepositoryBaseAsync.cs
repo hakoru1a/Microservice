@@ -68,6 +68,7 @@ namespace Infrastructure.Common
         public async Task<K> CreateAsync(T entity)
         {
             await _dbContext.Set<T>().AddAsync(entity);
+            await SaveChangesAsync();
             return entity.Id;
         }
 

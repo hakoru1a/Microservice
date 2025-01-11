@@ -9,7 +9,7 @@ services:
     image: mysql:8.0.29
 
   customerdb:
-    image: postgres:alpine3.16
+    image: postgres:alpine
 
   basketdb:
     image: redis:alpine
@@ -32,6 +32,20 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.2
+  #apis section
+  product.api:
+    image: ${DOCKER_REGISTRY-}product.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: product.api
+    build:
+      context: .
+      dockerfile: Product.API/Dockerfile
+
+  customer.api:
+    image: ${DOCKER_REGISTRY-}customer.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: customer.api
+    build:
+      context: .
+      dockerfile: Customer.API/Dockerfile
 
 #network section
 networks:
@@ -39,7 +53,7 @@ networks:
     name: tedu_microservices
     driver: bridge
 
-#vollumes section
+#volumes section
 volumes:
   sqlserver_data:
     name: sqlserver_data
@@ -57,3 +71,4 @@ volumes:
     name: mongo_data
   pgadmin_data:
     name: pgadmin_data
+

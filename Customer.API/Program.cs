@@ -1,35 +1,33 @@
-using Common.Logging;
+﻿using Common.Logging;
+using Customer.API.Extensions;
+using Customer.API.Extentions;
+using Customer.API.Persistence;
 using Serilog;
 
+var builder = WebApplication.CreateBuilder(args);
+
+// start up log
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 Log.Information("Starting Customer API up");
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog(SeriLogger.Configure);
-    // Add services to the container.
-
-    builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
-
+    builder.Host.AddAppConfigurations();
+    builder.Services.AddInfrastructure(builder.Configuration);
     var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
-
-    app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
+    app.UseInfrastructure();
     app.MapControllers();
-
-    app.Run();
-
+    app.MapEndpoints();
+    app.MigrateDatabase<CustomerContext>((context, _) =>
+    {
+        CustomerContextSeed.SeedCustomerAsync(context, Log.Logger).Wait();
+    }).Run();
+}
+catch (HostAbortedException ex)
+{
+    // Xử lý riêng cho HostAbortedException
+    Log.Warning("Host was aborted during startup: {Message}", ex.Message);
 }
 catch (Exception ex)
 {
