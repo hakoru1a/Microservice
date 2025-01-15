@@ -53,6 +53,13 @@ services:
     build:
       context: .
       dockerfile: Basket.API/Dockerfile
+  
+  order.api:
+    image: ${DOCKER_REGISTRY-}order.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: order.api
+    build:
+        context: .
+        dockerfile: Order.API/Dockerfile  
 
 #network section
 networks:
