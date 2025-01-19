@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Order.Application.Common.Exceptions;
 using Order.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Order.Application.Features.V1.Orders.Commands.UpdateOrder
         {
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new NotFoundException(nameof(request));
             }
 
             var order = _mapper.Map<OrderCatalog>(request);

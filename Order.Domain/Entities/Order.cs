@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Constracts.Domain;
 using Order.Domain.Enum;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Order.Domain.Entities
 {
@@ -29,11 +30,15 @@ namespace Order.Domain.Entities
         public string EmailAddress { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
-        public string ShippingAddress { get; set; }
+        [AllowNull]
+        public string? ShippingAddress { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
-        public string InvoiceAddress { get; set; }
+        [AllowNull]
+        public string? InvoiceAddress { get; set; }
 
-        public EOrderStatus Status {  get; set; }
+        public EOrderStatus Status { get; set; } = EOrderStatus.New;
+
+        public Guid No { get; set; } = Guid.NewGuid();
     }
 }

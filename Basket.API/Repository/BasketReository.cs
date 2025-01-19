@@ -36,7 +36,15 @@ namespace Basket.API.Repository
             }
         }
 
-        public async Task<Cart?> GetBasetKetByUsername(string username)
+        public async Task DeleteBasketFromUserName(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+
+            await _redisCache.RemoveAsync(username);
+        }
+
+        public async Task<Cart?> GetBasketByUsername(string username)
         {
             var basket = await _redisCache.GetStringAsync(username);
             return !string.IsNullOrEmpty(basket) ? _serializeService.Deserialize<Cart>(basket) : null;
@@ -53,7 +61,7 @@ namespace Basket.API.Repository
                 await _redisCache.SetStringAsync(cart.Username, _serializeService.Serialize(cart));
             }
 
-            var value =  await GetBasetKetByUsername(cart.Username);
+            var value =  await GetBasketByUsername(cart.Username);
 
             return value;
         }

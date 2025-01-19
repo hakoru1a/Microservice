@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EventBus.Messages.IntergrationEvent.Event;
 using MediatR;
 using Order.Application.Common.Mappings;
 using Order.Application.Common.Models;
@@ -24,6 +25,8 @@ namespace Order.Application.Features.V1.Orders.Commands.CreateOrder
         public void Mapping(Profile profile)
         {
             profile.CreateMap<CreateOrderCommand, OrderCatalog>();
+
+            profile.CreateMap<BasketCheckoutEvent, CreateOrderCommand>();
         }
     }
 }

@@ -1,6 +1,10 @@
 ﻿using System.Reflection;
 using AutoMapper;
+using Constracts.Common.Interface;
+using Constracts.Messages;
 using FluentValidation;
+using Infrastructure.Common;
+using Infrastructure.Messages;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Order.Application.Common.Behaviours;
@@ -18,6 +22,8 @@ public static class ConfigureServices
             .AddSingleton(AddMapper())
             .AddScoped<IOrderRepository, OrderRepository>()
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+            .AddScoped<IMessageProducer, RabbitMQProducer>()
+            .AddScoped<ISerializeService, SerializeService>()
             .AddMediatR(Assembly.GetExecutingAssembly())
             .AddTransient(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(UnhandledExceptionBehaviour<,>))
             .AddTransient(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(PerformanceBehaviour<,>))

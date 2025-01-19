@@ -1,4 +1,5 @@
-﻿using Constracts.Services;
+﻿using Constracts.Messages;
+using Constracts.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Order.Application.Common.Models;
@@ -16,16 +17,21 @@ namespace Order.API.Controllers
        private IMediator mediator;
 
        private readonly ISMTPEmailServices _emailServices;
-        public OrderController(IMediator mediator, ISMTPEmailServices emailServices)
+
+        private readonly IMessageProducer _messageProducer;
+        public OrderController(IMediator mediator, ISMTPEmailServices emailServices, IMessageProducer messageProducer)
        {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this._emailServices = emailServices;
+            this._messageProducer = messageProducer;
         }
 
         private static class Routes
         {
             public const string GetOrders = nameof(GetOrders);
         }
+
+
 
         [HttpGet("orders/{username}", Name = Routes.GetOrders)]
 
@@ -67,10 +73,10 @@ namespace Order.API.Controllers
                 InvoiceAddress = "123 Test Street, Test City, 12345",
                 Status = "Pending"
             };
+            _messageProducer.SendMessage<CreateOrderCommand>(command);
+            //var result = await mediator.Send(command);
 
-            var result = await mediator.Send(command);
-
-            return Ok(result);
+            return Ok();
         }
     }
 }

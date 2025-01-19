@@ -67,3 +67,5 @@ finally
 //dotnet ef database update --project Order.Infrastructure --startup-project Order.API
 
 //dotnet ef migrations add "Add_Status" --project Order.Infrastructure --startup-project Order.API --output-dir Persistence\Migrations
+
+//dotnet ef migrations add "Default value of status" --project Order.Infrastructure --startup-project Order.API --output-dir Persistence\Migrations

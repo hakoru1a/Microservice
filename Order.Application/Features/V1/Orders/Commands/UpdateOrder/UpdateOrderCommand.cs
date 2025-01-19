@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Infrastructure.Mapping;
 using MediatR;
 using Order.Application.Common.Mappings;
 using Order.Application.Features.V1.Orders.Commands.CreateOrder;
@@ -18,7 +19,7 @@ namespace Order.Application.Features.V1.Orders.Commands.UpdateOrder
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<UpdateOrderCommand, OrderCatalog>();
+            profile.CreateMap<UpdateOrderCommand, OrderCatalog>().IgnoreAllNonExisting();
         }
     }
 
