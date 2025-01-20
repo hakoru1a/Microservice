@@ -14,12 +14,13 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Order.API/Order.API.csproj", "Order.API/"]
 COPY ["Common.Logging/Common.Logging.csproj", "Common.Logging/"]
-COPY ["Order.Infrastructure/Order.Infrastructure.csproj", "Order.Infrastructure/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["Constracts/Constracts.csproj", "Constracts/"]
-COPY ["Shared/Shared.csproj", "Shared/"]
+COPY ["EventBus.Message/EventBus.Messages.csproj", "EventBus.Message/"]
 COPY ["Order.Application/Order.Application.csproj", "Order.Application/"]
 COPY ["Order.Domain/Order.Domain.csproj", "Order.Domain/"]
+COPY ["Constracts/Constracts.csproj", "Constracts/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
+COPY ["Order.Infrastructure/Order.Infrastructure.csproj", "Order.Infrastructure/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 RUN dotnet restore "./Order.API/Order.API.csproj"
 COPY . .
 WORKDIR "/src/Order.API"

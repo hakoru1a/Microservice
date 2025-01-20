@@ -24,7 +24,7 @@ public static class ConfigureServices
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
             .AddScoped<IMessageProducer, RabbitMQProducer>()
             .AddScoped<ISerializeService, SerializeService>()
-            .AddMediatR(Assembly.GetExecutingAssembly())
+            .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
             .AddTransient(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(UnhandledExceptionBehaviour<,>))
             .AddTransient(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(PerformanceBehaviour<,>))
             .AddTransient(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(ValidationBehaviour<,>));

@@ -36,11 +36,13 @@ namespace Order.Application.Features.V1.Orders.Commands.CreateOrder
 
                 var orderCataLog = _mapper.Map<OrderCatalog>(request);
 
-                var id = await _repository.CreateAsync(orderCataLog);
+                _repository.Create(orderCataLog);
+                orderCataLog.CreatedOrder();
+               await _repository.SaveChangesAsync();
 
-                _logger.Information("Successfully created order with ID: {OrderId}", id);
+                _logger.Information("Successfully created order with ID: {OrderId}", orderCataLog.Id);
 
-                return new ApiResult<long>(true, id);
+                return new ApiResult<long>(true, orderCataLog.Id);
             }
             catch (Exception ex)
             {

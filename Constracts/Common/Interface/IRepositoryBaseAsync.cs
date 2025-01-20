@@ -19,9 +19,12 @@ namespace Constracts.Common.Interface
     public interface IRepositoryBaseAsync<T, K> : IRepositoryQueryBase<T, K> where T : EntityBase<K>
     {
         Task<K> CreateAsync(T entity);
+        void Create(T entity);
         Task<IList<K>> CreateListAsync(IEnumerable<T> entities);
+        void Update(T entity);
         Task UpdateAsync(T entity);
         Task UpdateListAsync(IEnumerable<T> entities);
+        void Delete(T entity);
         Task DeleteAsync(T entity);
         Task DeleteListAsync(IEnumerable<T> entities);
         Task<IDbContextTransaction> BeginTransactionAsync();

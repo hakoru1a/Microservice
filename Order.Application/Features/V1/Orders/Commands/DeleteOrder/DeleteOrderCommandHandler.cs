@@ -21,7 +21,11 @@ namespace Order.Application.Features.V1.Orders.Commands.DeleteOrder
             {
                 return new ApiResult<bool>(false, "Order not found");
             }
-            await _repository.DeleteAsync(order);
+            
+            _repository.Delete(order);
+            order.DeletedOrder();
+            await _repository.SaveChangesAsync();
+
             return new ApiResult<bool>(true, "Order successfully deleted");
         }
     }   

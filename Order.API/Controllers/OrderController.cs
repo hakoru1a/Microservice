@@ -74,7 +74,7 @@ namespace Order.API.Controllers
                 Status = "Pending"
             };
             _messageProducer.SendMessage<CreateOrderCommand>(command);
-            //var result = await mediator.Send(command);
+            var result = await mediator.Send(command);
 
             return Ok();
         }

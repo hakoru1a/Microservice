@@ -135,9 +135,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - "ConnectionStrings:DefaultConnectionString=basketdb"
+      - "CacheSettings:ConnectionStrings=basketdb"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
       - basketdb
+      - rabbitmq
     ports:
       - "6004:80"
     restart: always 
@@ -148,8 +150,10 @@ services:
         - ASPNETCORE_ENVIRONMENT=Development
         - ASPNETCORE_URLS=http://+:80
         - "ConnectionStrings:DefaultConnectionString=Server=orderdb;Database=OrderDB;User Id=sa;Password=Passw0rd!;TrustServerCertificate=True"
+        - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
         - orderdb
+        - rabbitmq
     ports:
         - "6005:80"
     restart: always
