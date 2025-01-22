@@ -1,5 +1,5 @@
 ﻿using Constracts.Common.Interface;
-using Infrastructure.Common;
+using Infrastructure.Common.Repository;
 using Microsoft.EntityFrameworkCore;
 using Product.API.Entities;
 using Product.API.Persistence;

@@ -1,25 +1,25 @@
-﻿namespace Shared.SeedWork
-{
-    public class PagedList<T> : List<T>
+﻿    namespace Shared.SeedWork
     {
-        public PagedList(IEnumerable<T> items, long totalItems, int pageNumber, int pageSize)
+        public class PagedList<T> : List<T>
         {
-            _metaData = new MetaData
+            public PagedList(IEnumerable<T> items, long totalItems, int pageNumber, int pageSize)
             {
-                TotalItems = totalItems,
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
-            };
+                _metaData = new MetaData
+                {
+                    TotalItems = totalItems,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                };
 
-            AddRange(items);
-        }
+                AddRange(items);
+            }
 
-        private MetaData _metaData { get; }
+            private MetaData _metaData { get; }
 
-        public MetaData GetMetaData()
-        {
-            return _metaData;
+            public MetaData GetMetaData()
+            {
+                return _metaData;
+            }
         }
     }
-}

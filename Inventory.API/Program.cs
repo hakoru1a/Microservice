@@ -1,4 +1,5 @@
 using Common.Logging;
+using Inventory.API.Extensions;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -8,26 +9,11 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog(SeriLogger.Configure);
-    // Add services to the container.
-
-    builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
-
+    builder.Services.AddInfrastructure(builder.Configuration);
     var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
-
-    app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
+    app.MigrateDatabase();
+    app.UseInfrastructure();
     app.MapControllers();
-
     app.Run();
 
 }

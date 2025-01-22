@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Common
+namespace Infrastructure.Common.Repository
 {
     public class RepositoryBaseAsync<T, K, TContext> : IRepositoryBaseAsync<T, K, TContext>
         where T : EntityBase<K>
@@ -72,8 +72,8 @@ namespace Infrastructure.Common
             return entity.Id;
         }
         public async void Create(T entity) => await _dbContext.Set<T>().AddAsync(entity);
-    
-       
+
+
         public async Task<IList<K>> CreateListAsync(IEnumerable<T> entities)
         {
             await _dbContext.Set<T>().AddRangeAsync(entities);
@@ -115,6 +115,6 @@ namespace Infrastructure.Common
 
         public Task<int> SaveChangesAsync() => _dbContext.SaveChangesAsync();
 
-      
+
     }
 }

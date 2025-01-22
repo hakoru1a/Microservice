@@ -6,6 +6,7 @@ using Customer.API.Repository.Interface;
 using Customer.API.Services;
 using Customer.API.Services.Interface;
 using Infrastructure.Common;
+using Infrastructure.Common.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Basket.API.Entities;
+using Basket.API.gRPCServices;
 using Basket.API.Repository;
 using Basket.API.Repository.Interface;
 using EventBus.Messages.IntergrationEvent.Event;
@@ -22,11 +23,14 @@ namespace Basket.API.Controllers
 
         private IPublishEndpoint _publishEndpoint;
 
-        public BasketController(IBasketReository repository, IMapper mapper, IPublishEndpoint publishEndpoint)
+        private StockItemGrpcService _stockItemGrpcService;
+
+        public BasketController(IBasketReository repository, IMapper mapper, IPublishEndpoint publishEndpoint, StockItemGrpcService stockItemGrpcService)
         {
             _repository = repository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
+            _stockItemGrpcService = stockItemGrpcService;
         }
 
         [HttpGet("{username}", Name = "GetBasket")]
@@ -42,6 +46,11 @@ namespace Basket.API.Controllers
             //var options = new DistributedCacheEntryOptions()
             //    .SetAbsoluteExpiration(DateTime.UtcNow.AddHours(1))
             //    .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
+            foreach (var item in cart.Items) {
+                var stock = await _stockItemGrpcService.GetStock(item.No);
+                item.SetAvailableStock(stock.Quantity);
+            }
 
             var result = await _repository.UpdateBasket(cart, null);
             return Ok(result);
@@ -76,5 +85,7 @@ namespace Basket.API.Controllers
 
             return Accepted();
         }
+
+
     }
 }

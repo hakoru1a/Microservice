@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Basket.API.gRPCServices;
 using Basket.API.Repository;
 using Basket.API.Repository.Interface;
 using Constracts.Common.Interface;
@@ -6,11 +7,13 @@ using EventBus.Messages.IntergrationEvent.Interface;
 using Infrastructure.Common;
 using Infrastructure.Configurations;
 using Infrastructure.Extensions;
+using Inventory.gRPC.Protos;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using Shared.Configurations;
+using Shared.Configurations.Database;
 namespace Basket.API.Extensions;
 
 public static class ServiceExtensions
@@ -29,6 +32,7 @@ public static class ServiceExtensions
         });
         services.ConfigureMassTransit();
         services.AddConfigurationSettings(configuration);
+        services.ConfigGrpc();
         return services;
     }
 
@@ -49,7 +53,7 @@ public static class ServiceExtensions
         return services;
     }
 
-    public static void ConfigureMassTransit(this IServiceCollection services)
+    private static void ConfigureMassTransit(this IServiceCollection services)
     {
         var settings = services.GetOptions<EventBusSettings>(sectionName: nameof(EventBusSettings));
         if (settings == null || string.IsNullOrEmpty(settings.HostAddress))
@@ -65,6 +69,16 @@ public static class ServiceExtensions
             });
             config.AddRequestClient<IBasketCheckoutEvent>();
         });
+    }
+
+    private static void ConfigGrpc(this IServiceCollection services)
+    {
+        var settings = services.GetOptions<GrpcSettings>(sectionName: nameof(GrpcSettings));
+
+        services.AddGrpcClient<StockProtoService.StockProtoServiceClient>(x => x.Address = new Uri(settings.StockUrl));
+
+        services.AddScoped<StockItemGrpcService>();
+
     }
     internal static IServiceCollection AddConfigurationSettings(this IServiceCollection services,
         IConfiguration configuration)

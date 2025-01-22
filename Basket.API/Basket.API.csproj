@@ -9,6 +9,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Include="..\Inventory.gRPC\Protos\stock.proto" Link="stock.proto">
+	  </None>
+		<Protobuf Include="..\Inventory.gRPC\Protos\stock.proto">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<GrpcServices>Client</GrpcServices>
+			<Access>Public</Access>
+			<ProtoCompile>True</ProtoCompile>
+			<ProtoRoot></ProtoRoot>
+			<CompileOutputs>True</CompileOutputs>
+			<OutputDir>obj\Debug/net9.0/</OutputDir>
+			<Generator>MSBuild:Compile</Generator>
+		</Protobuf>
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Common.Logging\Common.Logging.csproj" />
 		<ProjectReference Include="..\Constracts\Constracts.csproj" />
 		<ProjectReference Include="..\EventBus.Message\EventBus.Messages.csproj" />
@@ -17,12 +32,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- AutoMapper -->
 		<PackageReference Include="AutoMapper" Version="12.0.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="Google.Protobuf" Version="3.29.3" />
+		<PackageReference Include="Google.Protobuf.Tools" Version="3.29.3" />
+		<PackageReference Include="Grpc" Version="2.46.6" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.69.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.4" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
-		<!-- Tools -->
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	</ItemGroup>
@@ -30,5 +52,6 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 	</ItemGroup>
+
 
 </Project>

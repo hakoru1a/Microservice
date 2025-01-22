@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Constracts.Common.Interface;
 using Infrastructure.Common;
+using Infrastructure.Common.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;

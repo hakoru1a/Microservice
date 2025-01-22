@@ -59,8 +59,21 @@ services:
     container_name: order.api
     build:
         context: .
-        dockerfile: Order.API/Dockerfile  
-
+        dockerfile: Order.API/Dockerfile
+  
+  inventory.api:
+    image: ${DOCKER_REGISTRY-}inventory.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: inventory.api
+    build:
+        context: .
+        dockerfile: Inventory.API/Dockerfile
+  
+  inventory.grpc:
+    image: ${DOCKER_REGISTRY-}inventory.grpc:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: inventory.grpc
+    build:
+        context: .
+        dockerfile: Inventory.gRPC/Dockerfile
 #network section
 networks:
   default:
