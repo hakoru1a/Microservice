@@ -41,6 +41,22 @@ namespace Customer.API.Services
             return true;
         }
 
+        public async Task<CustomerDto?> GetCustomerByUsername(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return null;
+
+            // FindByCondition thường trả về IQueryable hoặc IEnumerable
+            // nên cần FirstOrDefaultAsync để lấy một record
+            var customer = await _repository.FindByCondition(x => x.UserName.Equals(username))
+                                          .FirstOrDefaultAsync();
+
+            if (customer == null)
+                return null;
+
+            return _mapper.Map<CustomerDto>(customer);
+        }
+
         public async Task<CustomerDto> GetCustomerByEmailAddressAsync(string EmailAddress)
         {
             var customer = await _repository.FindByCondition(x => x.EmailAddress == EmailAddress)

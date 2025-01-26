@@ -112,6 +112,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - "ConnectionStrings:DefaultConnectionString=Server=productdb;Port=3306;Database=ProductDB;Uid=root;Pwd=Passw0rd!;"
+      - "JwtSettings:Key=myVerySecure@Key#2024#JWT$Token!123myVerySecure@Key#2024#JWT$Token!123"
     depends_on:
       - productdb
     ports:
@@ -184,4 +185,21 @@ services:
        - inventorydb
     ports:
         - "6007:80"
+    restart: always
+
+  api.gateway:
+    container_name: api.gateway
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Local
+        - ASPNETCORE_URLS=http://+:80
+        - GlobalConfiguration:BaseUrl=http://api.gateway
+        - "JwtSettings:Key=myVerySecure@Key#2024#JWT$Token!123myVerySecure@Key#2024#JWT$Token!123"
+    depends_on:
+       - customer.api
+       - basket.api
+       - product.api
+       - inventory.api
+       - order.api
+    ports:
+        - "6001:80"
     restart: always

@@ -1,23 +1,37 @@
-var builder = WebApplication.CreateBuilder(args);
+using Common.Logging;
+using Ocelot.API.Extensions;
+using OcelotAPIGateway.Extensions;
+using Serilog;
 
-// Add services to the container.
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+Log.Information("Starting Ocelot API up");
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Host.UseSerilog(SeriLogger.Configure);
+    builder.Host.AddAppConfigurations();
+
+    builder.Services.AddInfrastructure(builder.Configuration);
+
+    var app = builder.Build();
+
+
+
+    app.MapControllers();
+
+    app.UseInfrastructure();
+
+
+    app.Run();
+
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Unhandle Exception");
+}
+finally
+{
+    Log.Information("Shut down Starting API complete");
+    Log.CloseAndFlush();
+}

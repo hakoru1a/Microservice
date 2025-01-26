@@ -22,11 +22,11 @@ namespace Customer.API.Controllers
             .Produces<List<CustomerDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            group.MapGet("/{id}", async (long id, ICustomerService customerService) =>
+            group.MapGet("/{username}", async (string username, ICustomerService customerService) =>
             {
-                var customer = await customerService.GetCustomerByIdAsync(id);
+                var customer = await customerService.GetCustomerByUsername(username);
                 if (customer == null)
-                    return Results.NotFound($"Customer with ID {id} not found.");
+                    return Results.NotFound($"Customer with ID {username} not found.");
 
                 return Results.Ok(customer);
             })

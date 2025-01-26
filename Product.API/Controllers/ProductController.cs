@@ -6,6 +6,7 @@ using Product.API.Entities;
 using Product.API.Repository.Interface;
 using AutoMapper;
 using Shared.DTOs.Product;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Product.API.Controllers
 {
@@ -44,6 +45,7 @@ namespace Product.API.Controllers
         }
 
         // POST: api/products
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
         {
@@ -56,6 +58,7 @@ namespace Product.API.Controllers
         }
 
         // PUT: api/products/{id}
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDto productDto)
         {
@@ -73,6 +76,7 @@ namespace Product.API.Controllers
         }
 
         // DELETE: api/products/{id}
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

@@ -17,23 +17,7 @@ namespace Inventory.API.Controllers
             _inventoryService = inventoryService;
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(InventoryEntryDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<InventoryEntryDto>> GetById(string id)
-        {
-            try
-            {
-                var result = await _inventoryService.GetByIdAsync(id);
-                return Ok(result);
-            }
-            catch (Exception ex) when (ex.Message == "Inventory entry not found")
-            {
-                return NotFound();
-            }
-        }
-
+        // GET: api/inventory/items/{itemNo}
         [HttpGet("items/{itemNo}")]
         [ProducesResponseType(typeof(IEnumerable<InventoryEntryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -43,7 +27,8 @@ namespace Inventory.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("items/{itemNo}/paged")]
+        // GET: api/inventory/items/{itemNo}/paging
+        [HttpGet("items/{itemNo}/paging")] // Sửa từ "paged" thành "paging" theo route map
         [ProducesResponseType(typeof(PagedList<InventoryEntryDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -65,6 +50,25 @@ namespace Inventory.API.Controllers
             return Ok(result);
         }
 
+        // GET: api/inventory/{id}
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(InventoryEntryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<InventoryEntryDto>> GetById(string id)
+        {
+            try
+            {
+                var result = await _inventoryService.GetByIdAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex) when (ex.Message == "Inventory entry not found")
+            {
+                return NotFound();
+            }
+        }
+
+        // POST: api/inventory/purchase/{itemNo}
         [HttpPost("purchase/{itemNo}")]
         [ProducesResponseType(typeof(InventoryEntryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -83,26 +87,15 @@ namespace Inventory.API.Controllers
                 result);
         }
 
+        // DELETE: api/inventory/{id}
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(string id)
         {
             await _inventoryService.DeleteAsync(id);
             return NoContent();
         }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update(string id, [FromBody] InventoryEntry entity)
-        {
-            if (id != entity.Id)
-                return BadRequest("Id in URL must match Id in request body");
-
-            await _inventoryService.UpdateAsync(entity);
-            return NoContent();
-        }
-    }
+}
 }

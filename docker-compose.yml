@@ -74,6 +74,14 @@ services:
     build:
         context: .
         dockerfile: Inventory.gRPC/Dockerfile
+
+#gateway section
+  api.gateway:
+    image: ${DOCKER_REGISTRY-}api.gateway:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: api.gateway
+    build:
+        context: .
+        dockerfile: OCelotAPIGateway/Dockerfile
 #network section
 networks:
   default:

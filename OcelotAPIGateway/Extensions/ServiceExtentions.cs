@@ -1,22 +1,16 @@
-﻿using AutoMapper;
-using Constracts.Common.Interface;
-using Constracts.Indentity;
-using Infrastructure.Common;
-using Infrastructure.Common.Repository;
+﻿using Constracts.Indentity;
 using Infrastructure.Extensions;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySqlConnector;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Product.API.Persistence;
-using Product.API.Repository;
-using Product.API.Repository.Interface;
+using Ocelot.Cache.CacheManager;
+using Ocelot.DependencyInjection;
+using Ocelot.Provider.Polly;
 using Shared.Configurations;
 using System.Text;
-namespace Product.API.Extensions;
+using MMLib.SwaggerForOcelot;
+namespace Ocelot.API.Extensions;
 
 public static class ServiceExtensions
 {
@@ -25,22 +19,36 @@ public static class ServiceExtensions
         services.AddControllers();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
         services.AddEndpointsApiExplorer();
-        services.ConfigureProductDbContext(configuration);
-        services.AddInfrastructureServices();
         services.ConfigureSwagger();
+        services.ConfigureOcelot(configuration);
+        services.ConfigureCors(configuration);
         services.AddConfigurationSettings(configuration);
         services.AddJwtAuthentication();
+        services.AddTransient<ITokenService, TokenService>();
         return services;
     }
-    private static IMapper AddMapper ()
-    {
-        var mapperConfig = new MapperConfiguration(mc =>
-        {
-            mc.AddProfile(new MapperProfile());
-        });
 
-        return mapperConfig.CreateMapper();
+    public static void ConfigureOcelot(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOcelot(configuration)
+            .AddPolly();
+        services.AddSwaggerForOcelot(configuration, x =>
+        {
+            x.GenerateDocsForGatewayItSelf = false;
+        });
     }
+    private static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        var origins = configuration["AllowOrigins"];
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", builder => {
+                builder.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod();
+            });
+        });
+    }
+
     private static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
@@ -71,7 +79,7 @@ public static class ServiceExtensions
             RequireExpirationTime = false
         };
 
-        services.AddAuthentication(o => 
+        services.AddAuthentication(o =>
         {
             o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -86,30 +94,6 @@ public static class ServiceExtensions
 
         return services;
     }
-
-    private static IServiceCollection ConfigureProductDbContext(this IServiceCollection services, IConfiguration configuration)
-    {
-        var connectionString = configuration.GetConnectionString(name: "DefaultConnectionString");
-        
-        var builder = new MySqlConnectionStringBuilder(connectionString);
-
-        services.AddDbContext<ProductContext>(optionsAction: m => m.UseMySql(builder.ConnectionString,
-            ServerVersion.AutoDetect(builder.ConnectionString), mySqlOptionsAction: e =>
-            {
-                e.MigrationsAssembly("Product.API");
-                e.SchemaBehavior(MySqlSchemaBehavior.Ignore);
-            }));
-
-        return services;
-    }
-    private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
-    {
-        return services.AddScoped(typeof(IRepositoryBaseAsync<,,>), typeof(RepositoryBaseAsync<,,>))
-                      .AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>))
-                      .AddScoped<IProductRepository, ProductRepository>()
-                      .AddSingleton(AddMapper())
-                      .AddTransient<ITokenService, TokenService>();
-    }
     private static void ConfigureSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
@@ -118,7 +102,7 @@ public static class ServiceExtensions
             {
                 Title = "Ecom API",
                 Version = "v1",
-                Description = "E-commerce API for Product Management",  // Added meaningful description
+                Description = "E-commerce API for Customer Management",  // Added meaningful description
                 Contact = new OpenApiContact
                 {
                     Name = "Chuong Dang",

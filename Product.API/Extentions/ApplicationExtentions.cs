@@ -1,12 +1,21 @@
-﻿namespace Product.API.Extentions
+﻿using Infrastructure.Middlewares;
+
+namespace Product.API.Extentions
 {
     public static class ApplicationExtentions
     {
         public static void UseInfrastructure(this IApplicationBuilder app) 
         {
-            app.UseAuthorization();
 
             app.UseSwagger();
+
+            app.UseMiddleware<ErrorWrappingMiddleware>();
+
+            app.UseAuthentication();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseSwaggerUI(options =>
             {
