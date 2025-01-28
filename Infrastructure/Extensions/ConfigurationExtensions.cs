@@ -15,4 +15,5 @@ public static class ConfigurationExtensions
 
         return options;
     }
+
 }

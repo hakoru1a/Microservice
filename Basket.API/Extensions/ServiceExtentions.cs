@@ -2,6 +2,8 @@
 using Basket.API.gRPCServices;
 using Basket.API.Repository;
 using Basket.API.Repository.Interface;
+using Basket.API.Services;
+using Basket.API.Services.Interfaces;
 using Constracts.Common.Interface;
 using EventBus.Messages.IntergrationEvent.Interface;
 using Infrastructure.Common;
@@ -32,14 +34,16 @@ public static class ServiceExtensions
         });
         services.ConfigureMassTransit();
         services.AddConfigurationSettings(configuration);
+        services.ConfigureHttpClientService();
         services.ConfigGrpc();
         return services;
     }
 
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        return services.AddScoped<IBasketReository, BasketReository>()
-                 .AddTransient<ISerializeService, SerializeService>();
+        return services.AddScoped<IBasketRepository, BasketRepository>()
+                 .AddTransient<ISerializeService, SerializeService>()
+                 .AddTransient<IEmailTemplateService, BasketEmaiTemplateService>();
     }
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
@@ -87,8 +91,18 @@ public static class ServiceExtensions
             .Get<EventBusSettings>();
         services.AddSingleton(eventBusSettings);
 
+        var backgroundJobSettings = configuration.GetSection(nameof(BackgroundJobSettings)).Get<BackgroundJobSettings>();
+
+        services.AddSingleton(backgroundJobSettings);
+
         return services;
     }
+
+    public static void ConfigureHttpClientService (this IServiceCollection services)
+    {
+        services.AddHttpClient<BackgroundJobHttpService>();
+    }
+
     private static void ConfigureSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>

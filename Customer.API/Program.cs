@@ -18,6 +18,7 @@ try
     var app = builder.Build();
     app.UseInfrastructure();
     app.MapControllers();
+    app.UseHangfireDashboard(builder.Configuration);
     app.MapEndpoints();
     app.MigrateDatabase<CustomerContext>((context, _) =>
     {

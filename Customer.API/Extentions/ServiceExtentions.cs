@@ -10,6 +10,9 @@ using Infrastructure.Common.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using Shared.Configurations.Database;
+using Shared.Configurations;
+using Infrastructure.ScheduleJob;
 namespace Customer.API.Extensions;
 
 public static class ServiceExtensions
@@ -22,7 +25,8 @@ public static class ServiceExtensions
         services.ConfigureCustomerDbContext(configuration);
         services.AddInfrastructureServices();
         services.ConfigureSwagger();
-
+        services.AddConfigurationSettings(configuration);
+        services.AddHangfireService();
         return services;
     }
     private static IMapper AddMapper()
@@ -58,6 +62,16 @@ public static class ServiceExtensions
                       .AddScoped<ICustomerService, CustomerService>()
                       .AddSingleton(AddMapper());
     }
+
+    private static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        var hangfireSettings = configuration.GetSection(key: nameof(HangFireSettings))
+            .Get<HangFireSettings>();
+        services.AddSingleton(hangfireSettings);
+
+        return services;
+    }
+
     private static void ConfigureSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>

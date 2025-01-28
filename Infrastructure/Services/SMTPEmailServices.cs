@@ -23,28 +23,30 @@ namespace Infrastructure.Services
         }
         public async Task SendEmailAsync(MailRequest request, CancellationToken cancellationToken = new CancellationToken())
         {
-            var emailMessage = new MimeMessage
-            {
-                Sender = new MailboxAddress(_emailSMTPSettings.DisplayName, address: request.From ?? _emailSMTPSettings.From),
-                Subject = request.Subject,
-                Body = new BodyBuilder
-                {
-                    HtmlBody = request.Body
-                }.ToMessageBody() // MimeEntity
-            };
+            //var emailMessage = new MimeMessage
+            //{
+            //    Sender = new MailboxAddress(_emailSMTPSettings.DisplayName, address: request.From ?? _emailSMTPSettings.From),
+            //    Subject = request.Subject,
+            //    Body = new BodyBuilder
+            //    {
+            //        HtmlBody = request.Body
+            //    }.ToMessageBody() // MimeEntity
+            //};
 
-            if (request.ToAddresses.Any())
-            {
-                foreach (var toAddress in request.ToAddresses)
-                {
-                    emailMessage.To.Add(MailboxAddress.Parse(toAddress));
-                }
-            }
-            else
-            {
-                var toAddress = request.ToAddress;
-                emailMessage.To.Add(MailboxAddress.Parse(toAddress));
-            }
+            //if (request.ToAddresses.Any())
+            //{
+            //    foreach (var toAddress in request.ToAddresses)
+            //    {
+            //        emailMessage.To.Add(MailboxAddress.Parse(toAddress));
+            //    }
+            //}
+            //else
+            //{
+            //    var toAddress = request.ToAddress;
+            //    emailMessage.To.Add(MailboxAddress.Parse(toAddress));
+            //}
+
+            _logger.Information("send mail success....");
         }
     }
 }

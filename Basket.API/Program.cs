@@ -19,7 +19,7 @@ try
     app.UseInfrastructure();
     
     app.MapControllers();
-    app.Run();
+        app.Run();
 
 }
 catch (Exception ex)

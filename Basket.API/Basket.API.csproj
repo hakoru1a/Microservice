@@ -53,5 +53,12 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="EmailTemplates\reminder-checkout-order.html">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	
+
 
 </Project>

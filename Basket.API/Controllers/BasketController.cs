@@ -3,13 +3,16 @@ using Basket.API.Entities;
 using Basket.API.gRPCServices;
 using Basket.API.Repository;
 using Basket.API.Repository.Interface;
+using Basket.API.Services.Interfaces;
 using EventBus.Messages.IntergrationEvent.Event;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Shared.DTOs.Basket;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Cart = Basket.API.Entities.Cart;
 
 namespace Basket.API.Controllers
 {
@@ -17,7 +20,7 @@ namespace Basket.API.Controllers
     [Route("api/[controller]")]
     public class BasketController: ControllerBase
     {
-        private IBasketReository _repository;
+        private IBasketRepository _repository;
 
         private IMapper _mapper;
 
@@ -25,34 +28,43 @@ namespace Basket.API.Controllers
 
         private StockItemGrpcService _stockItemGrpcService;
 
-        public BasketController(IBasketReository repository, IMapper mapper, IPublishEndpoint publishEndpoint, StockItemGrpcService stockItemGrpcService)
+        private IEmailTemplateService _emailTemplateService;
+
+
+        public BasketController(IBasketRepository repository, IMapper mapper, 
+            IPublishEndpoint publishEndpoint, StockItemGrpcService stockItemGrpcService, IEmailTemplateService emailTemplateService)
         {
             _repository = repository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _stockItemGrpcService = stockItemGrpcService;
+            _emailTemplateService = emailTemplateService;
         }
 
         [HttpGet("{username}", Name = "GetBasket")]
-        public async Task<ActionResult<Cart>> GetBasketByUsername([Required] string username)
+        public async Task<ActionResult<CartItemDto>> GetBasketByUsername([Required] string username)
         {
             var result = await _repository.GetBasketByUsername(username);
-            return Ok(result ?? new Cart());
+            return Ok(result);
         }
 
         [HttpPost(Name = "UpdateBasket")]
-        public async Task<ActionResult<Cart>> UpdateBasket([FromBody] Cart cart)
+        public async Task<ActionResult<CartItemDto>> UpdateBasket([FromBody] CartDto model)
         {
             //var options = new DistributedCacheEntryOptions()
-            //    .SetAbsoluteExpiration(DateTime.UtcNow.AddHours(1))
+            //    .SetAbsoluteExpiration(DateTime.UtcNow.AddHours(1))   
             //    .SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
-            foreach (var item in cart.Items) {
-                var stock = await _stockItemGrpcService.GetStock(item.No);
-                item.SetAvailableStock(stock.Quantity);
+
+
+            foreach (var item in model.Items) {
+                //var stock = await _stockItemGrpcService.GetStock(item.No);
+                item.AvailableStock = 10;
             }
 
-            var result = await _repository.UpdateBasket(cart, null);
+            var entity = _mapper.Map<Cart>(model);
+            var updated = await _repository.UpdateBasket(entity, null);
+            var result = _mapper.Map<CartDto>(updated);
             return Ok(result);
         }
 
@@ -85,6 +97,23 @@ namespace Basket.API.Controllers
 
             return Accepted();
         }
+
+
+        [HttpPost(template: "[action]", Name = "SendEmailReminder")]
+        public ContentResult SendEmailReminder()
+        {
+            var emailTemplate = _emailTemplateService
+                .GenerateReminderCheckoutOrderEmail("test");
+
+            var result = new ContentResult
+            {
+                Content = emailTemplate,
+                ContentType = "text/html"
+            };
+
+            return result;
+        }
+
 
 
     }

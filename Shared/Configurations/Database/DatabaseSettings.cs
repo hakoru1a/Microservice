@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Configurations.Database
 {
-    public abstract class DatabaseSettings
+    public class DatabaseSettings
     {
         public string ConnectionStrings { set; get; }
 

@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Customer.API.Extensions;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Shared.Configurations;
 
 namespace Customer.API.Extentions
 {
@@ -13,6 +16,25 @@ namespace Customer.API.Extentions
                       .AddJsonFile(path: $"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                       .AddEnvironmentVariables();
             });
+
+
+        }
+        internal static IApplicationBuilder UseHangfireDashboard(this IApplicationBuilder app, IConfiguration configuration)
+        {
+            var configDashboard = configuration.GetSection(key: "HangFireSettings:Dashboard").Get<DashboardOptions>();
+            var hangfireSettings = configuration.GetSection(key: "HangFireSettings").Get<HangFireSettings>();
+            var hangfireRoute = hangfireSettings.Route;
+
+            app.UseHangfireDashboard(hangfireRoute, new DashboardOptions
+            {
+                Authorization = new[] { new AuthorizationFilter()},
+                DashboardTitle = configDashboard.DashboardTitle,
+                StatsPollingInterval = configDashboard.StatsPollingInterval,
+                AppPath = configDashboard.AppPath,
+                IgnoreAntiforgeryToken = true
+            });
+
+            return app;
         }
         public static IHost MigrateDatabase<TContext>(this IHost host, Action<TContext, IServiceProvider> seeder) where TContext : DbContext
         {

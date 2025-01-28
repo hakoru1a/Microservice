@@ -1,32 +1,35 @@
-using Common.Logging;
+using Hangfire;
+using Hangfire.API.Extensions;
+using Infrastructure.ScheduleJob;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
-Log.Information("Starting Hangfire API up");
+Log.Information("Starting Hangfire up");
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog(SeriLogger.Configure);
-    // Add services to the container.
-
+    builder.Host.AddAppConfigurations();
+    builder.Services.AddConfigurationSettings(builder.Configuration);
     builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
-
+    builder.Services.AddHangfireService();
     var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.MapOpenApi();
-    }
-
-    app.UseHttpsRedirection();
+    
+    app.UseRouting();
 
     app.UseAuthorization();
 
-    app.MapControllers();
+    app.UseHangfireDashboard(builder.Configuration);
+
+    app.UseInfrastructure();
+
+
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapDefaultControllerRoute();
+        endpoints.MapGet("/", () => Results.Redirect("/jobs"));
+    });
 
     app.Run();
 
@@ -37,6 +40,6 @@ catch (Exception ex)
 }
 finally
 {
-    Log.Information("Shut down Product API complete");
+    Log.Information("Shut down Hangfire complete");
     Log.CloseAndFlush();
 }

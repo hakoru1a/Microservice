@@ -16,6 +16,9 @@ services:
 
   inventorydb:
     image: mongo
+  
+  hangfiredb:
+    image: mongo
 
   #infrastructure section
   rabbitmq:
@@ -75,6 +78,13 @@ services:
         context: .
         dockerfile: Inventory.gRPC/Dockerfile
 
+  hangfire.api:
+    image: ${DOCKER_REGISTRY-}hangfire.api:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: hangfire.api
+    build:
+        context: .
+        dockerfile: Hangfire.API/Dockerfile
+
 #gateway section
   api.gateway:
     image: ${DOCKER_REGISTRY-}api.gateway:${PLATFORM:-linux}-${TAG:-latest}
@@ -82,6 +92,7 @@ services:
     build:
         context: .
         dockerfile: OCelotAPIGateway/Dockerfile
+
 #network section
 networks:
   default:
@@ -106,4 +117,5 @@ volumes:
     name: mongo_data
   pgadmin_data:
     name: pgadmin_data
-
+  hangfire_mongo_data:
+    name: hangfire_mongo_data
