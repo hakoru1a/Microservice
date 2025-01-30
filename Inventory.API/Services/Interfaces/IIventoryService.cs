@@ -14,5 +14,9 @@ namespace Inventory.API.Services.Interfaces
         Task<InventoryEntryDto> GetByIdAsync(string id);
 
         Task<InventoryEntryDto> PurchaseProduct(string itemNo ,PurchaseProductDto purchaseProductDto);
+
+        Task<InventoryEntryDto> SalesItemAsync(string itemNo, SalesProductDto model);
+
+        Task DeleteByDocumentNoAsync(string documentNo);
     }
 }

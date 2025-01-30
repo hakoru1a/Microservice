@@ -3,11 +3,7 @@ using EventBus.Messages.IntergrationEvent.Event;
 using MediatR;
 using Order.Application.Common.Mappings;
 using Order.Application.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.DTOs.Order;
 using OrderCatalog = Order.Domain.Entities.Order;
 namespace Order.Application.Features.V1.Orders.Commands.CreateOrder
 {
@@ -21,12 +17,15 @@ namespace Order.Application.Features.V1.Orders.Commands.CreateOrder
         public string ShippingAddress { get; set; }
         public string InvoiceAddress { get; set; }
         public string Status { get; set; }
+        public string No { set; get; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<CreateOrderCommand, OrderCatalog>();
 
             profile.CreateMap<BasketCheckoutEvent, CreateOrderCommand>();
+
+            profile.CreateMap<CreateOrderDto, CreateOrderCommand>();
         }
     }
 }

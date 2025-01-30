@@ -15,7 +15,7 @@ namespace Shared.DTOs.Basket
 
         public int AvailableStock { get; set; }
 
-
+        public string? ExternalDocumentNo { get; set; }
 
     }
 }

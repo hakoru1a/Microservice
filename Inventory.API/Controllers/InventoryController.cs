@@ -3,6 +3,8 @@ using Inventory.API.Services.Interfaces;
 using Shared.DTOs.Inventory;
 using Shared.SeedWork;
 using Inventory.API.Entities;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace Inventory.API.Controllers
 {
@@ -97,5 +99,14 @@ namespace Inventory.API.Controllers
             await _inventoryService.DeleteAsync(id);
             return NoContent();
         }
-}
+
+        [HttpPost(template: "sales/{itemNo}", Name = "SalesOrder")]
+        [ProducesResponseType(typeof(InventoryEntryDto), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<InventoryEntryDto>> SalesOrder([Required] string itemNo, [FromBody] SalesProductDto model)
+        {
+            model.SetItemNo(itemNo);
+            var result = await _inventoryService.SalesItemAsync(itemNo, model);
+            return Ok(result);
+        }
+    }
 }

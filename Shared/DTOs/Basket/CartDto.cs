@@ -22,8 +22,8 @@ namespace Shared.DTOs.Basket
             public string Email { get; set; }
             public List<CartItemDto> Items { get; set; } = new();
 
-            public decimal TotalPrice { set;get; }
+            public decimal TotalPrice => Items.Sum(item => item.Price * item.Quantity);
 
-    }
+        }
 
 }

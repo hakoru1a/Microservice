@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Constracts.Domain;
-using Order.Domain.Enum;
 using System.Diagnostics.CodeAnalysis;
 using Constracts.Common.Events;
 using Order.Domain.OrderAggregate.Events;
+using Shared.Enums.Order;
 
 namespace Order.Domain.Entities
 {

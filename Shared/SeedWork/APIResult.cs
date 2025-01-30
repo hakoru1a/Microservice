@@ -1,9 +1,12 @@
-﻿public class ApiResult<T>
+﻿using System.Text.Json.Serialization;
+
+public class ApiResult<T>
 {
     public ApiResult(long id)
     {
     }
 
+    [JsonConstructor]
     public ApiResult(bool isSucceeded, string message = null)
     {
         Message = message;

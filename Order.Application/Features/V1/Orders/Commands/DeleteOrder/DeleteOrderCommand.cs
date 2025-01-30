@@ -9,6 +9,11 @@ namespace Order.Application.Features.V1.Orders.Commands.DeleteOrder
 {
     public class DeleteOrderCommand<T> : IRequest<ApiResult<bool>>
     {
-        public T Id {set; get; }
+        public T Id { get; private set; }
+
+        public DeleteOrderCommand(T id)
+        {
+            Id = id;
+        }
     }
 }
