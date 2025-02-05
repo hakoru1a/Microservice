@@ -97,6 +97,27 @@ namespace Inventory.API.Services
             return result;
         }
 
+        public async Task<string> SaleOrderAsync(SalesOrderDto model)
+        {
+            var documentNo = Guid.NewGuid().ToString();
+
+            foreach (var saleItem in model.SaleItems)
+            {
+                var itemToAdd = new InventoryEntry(ObjectId.GenerateNewId().ToString())
+                {
+                    DocumentNo = documentNo,
+                    ItemNo = saleItem.No,
+                    ExternalDocumentNo = model.OrderNo,
+                    Quantity = saleItem.Quantity * -1,
+                    DocumentType = saleItem.DocumentType
+                };
+
+                await CreateAsync(itemToAdd);
+            }
+
+            return documentNo;
+        }
+
         public async Task<InventoryEntryDto> SalesItemAsync(string itemNo, SalesProductDto model)
         {
             var itemToAdd = new InventoryEntry(ObjectId.GenerateNewId().ToString())
@@ -113,5 +134,7 @@ namespace Inventory.API.Services
 
             return result;
         }
+
+        
     }
 }

@@ -14,7 +14,7 @@ namespace Saga.Orchestrator.HttpRepository
 
         public Task<bool> DeleteBasket(string username)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public async Task<CartDto> GetBasket(string username)

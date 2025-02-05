@@ -94,27 +94,32 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-  
+
   elasticsearch:
-    container_name: elasticsearch
-    environment:
-      - xpack.monitoring.enabled=true
-      - xpack.watcher.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-  
+      container_name: elasticsearch
+      environment:
+        - xpack.monitoring.enabled=false
+        - xpack.watcher.enabled=false
+        - xpack.security.enabled=true
+        - ELASTIC_USERNAME=elastic
+        - ELASTIC_PASSWORD=admin
+        - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+        - discovery.type=single-node
+      ports:
+        - "9200:9200"
+      volumes:
+        - elasticsearch_data:/usr/share/elasticsearch/data
+
   kibana:
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    ports:
-      - "5601:5601"
+      container_name: kibana
+      environment:
+        - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+        - ELASTICSEARCH_USERNAME=elastic
+        - ELASTICSEARCH_PASSWORD=admin
+      depends_on:
+        - elasticsearch
+      ports:
+        - "5601:5601"
  #api section
   product.api:
     container_name: product.api

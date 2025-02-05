@@ -20,6 +20,6 @@ namespace Shared.DTOs.Order
 
         public string status { get; set; }
 
-        public Guid No { get; set; } = Guid.NewGuid();
+        public string No { get; set; } = Guid.NewGuid().ToString();
     }
 }

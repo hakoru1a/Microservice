@@ -4,11 +4,13 @@ using Basket.API.Repository;
 using Basket.API.Repository.Interface;
 using Basket.API.Services;
 using Basket.API.Services.Interfaces;
+using Common.Logging;
 using Constracts.Common.Interface;
 using EventBus.Messages.IntergrationEvent.Interface;
 using Infrastructure.Common;
 using Infrastructure.Configurations;
 using Infrastructure.Extensions;
+using Infrastructure.Policies;
 using Inventory.gRPC.Protos;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -43,7 +45,8 @@ public static class ServiceExtensions
     {
         return services.AddScoped<IBasketRepository, BasketRepository>()
                  .AddTransient<ISerializeService, SerializeService>()
-                 .AddTransient<IEmailTemplateService, BasketEmaiTemplateService>();
+                 .AddTransient<IEmailTemplateService, BasketEmaiTemplateService>()
+                 .AddTransient<LoggingDelegatingHandler>();
     }
     private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
@@ -99,7 +102,11 @@ public static class ServiceExtensions
     }
 
     public static void ConfigureHttpClientService (this IServiceCollection services)
-        => services.AddHttpClient<BackgroundJobHttpService>();
+        => services.AddHttpClient<BackgroundJobHttpService>()
+                   .AddHttpMessageHandler<LoggingDelegatingHandler>()
+                   .UseImmediateHttpRetryPolicy()
+                   .UseCircuitBreakerPolicy()
+                   .ConfigureTimeoutPolicy(5);
 
     private static void ConfigureSwagger(this IServiceCollection services)
     {

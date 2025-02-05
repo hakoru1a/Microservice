@@ -2,6 +2,11 @@
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"
   },
+  "ElasticConfiguration": {
+    "Uri": "http://localhost:9200",
+    "Username": "elastic",
+    "Password": "admin"
+  },
   "Routes": [
     // Customer API Routes
     {

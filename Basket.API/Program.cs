@@ -19,7 +19,8 @@ try
     app.UseInfrastructure();
     
     app.MapControllers();
-        app.Run();
+    
+    app.Run();
 
 }
 catch (Exception ex)
@@ -28,6 +29,6 @@ catch (Exception ex)
 }
 finally
 {
-    Log.Information("Shut down Product API complete");
+    Log.Information("Shut down Basket API complete");
     Log.CloseAndFlush();
 }

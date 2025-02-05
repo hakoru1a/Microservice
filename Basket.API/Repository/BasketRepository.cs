@@ -58,8 +58,26 @@ namespace Basket.API.Repository
 
         public async Task<Cart?> GetBasketByUsername(string username)
         {
+            try
+            {
+                _logger.Information("Test log message");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Logging failed: {ex.Message}");
+            }
+            _logger.Information(messageTemplate: $"BEGIN: GetBasketByUserName {username}");
             var basket = await _redisCache.GetStringAsync(username);
-            return !string.IsNullOrEmpty(basket) ? _serializeService.Deserialize<Cart>(basket) : null;
+
+            if (!string.IsNullOrEmpty(basket))
+            {
+                var result = _serializeService.Deserialize<Cart>(basket);
+                var totalPrice = result.TotalPrice;
+                _logger.Information("END: GetBasketByUserName {username} - Total Price: {totalPrice}", username, totalPrice);
+                return result;
+            }
+
+            return null;
         }
 
         public async Task<Cart?> UpdateBasket(Cart cart, DistributedCacheEntryOptions options)
@@ -97,8 +115,7 @@ namespace Basket.API.Repository
                 if (cart == null || string.IsNullOrEmpty(cart.JobId)) return;
 
                 var jobId = cart.JobId;
-                var uri = $"{_backgroundJobHttpService.ScheduledUrl}/delete/jobId/{jobId}";
-                await _backgroundJobHttpService.Client.DeleteAsync(uri);
+               _backgroundJobHttpService.DeleteReminderCheckoutOrder(jobId);
                 _logger.Information($"DeleteReminderCheckoutOrder:Deleted JobId: {jobId}");
             }
             catch (Exception ex)
@@ -112,21 +129,19 @@ namespace Basket.API.Repository
         {
             var emailTemplate = _emailTemplateService.GenerateReminderCheckoutOrderEmail(cart.Username);
 
-            var model = new ReminderCheckoutOrderDto(cart.Email, "Reminder Checkout", emailTemplate, DateTimeOffset.UtcNow.AddMinutes(1));
+            var model = new ReminderCheckoutOrderDto(
+                email: cart.Email,
+                subject: "Reminder checkout",
+                emailContent: emailTemplate,
+                enqueueAt: DateTimeOffset.UtcNow.AddSeconds(30)
+            );
 
-            var uri = $"{_backgroundJobHttpService.ScheduledUrl}/send-email-reminder-checkout-order";
+            var jobId = await _backgroundJobHttpService.SendEmailReminderCheckout(model);
 
-
-            var response = await _backgroundJobHttpService.Client.PostAsJson(uri, model);
-
-            if (response.EnsureSuccessStatusCode().IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(jobId))
             {
-                var jobId = await response.ReadContentAs<string>();
-                if (!string.IsNullOrEmpty(jobId))
-                {
-                    cart.JobId = jobId;
-                    await _redisCache.SetStringAsync(cart.Username, _serializeService.Serialize(cart));
-                }
+                cart.JobId = jobId;
+                await _redisCache.SetStringAsync(cart.Username, _serializeService.Serialize(cart));
             }
         }
     }
