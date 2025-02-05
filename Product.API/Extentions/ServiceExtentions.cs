@@ -7,6 +7,8 @@ using Infrastructure.Extensions;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;
@@ -15,6 +17,7 @@ using Product.API.Persistence;
 using Product.API.Repository;
 using Product.API.Repository.Interface;
 using Shared.Configurations;
+using Shared.Configurations.Database;
 using System.Text;
 namespace Product.API.Extensions;
 
@@ -30,6 +33,7 @@ public static class ServiceExtensions
         services.ConfigureSwagger();
         services.AddConfigurationSettings(configuration);
         services.AddJwtAuthentication();
+        services.ConfigureHealthCheck();
         return services;
     }
     private static IMapper AddMapper ()
@@ -44,7 +48,13 @@ public static class ServiceExtensions
     private static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+
+        var databaseSettings = configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
+
         services.AddSingleton(jwtSettings);
+
+        services.AddSingleton(databaseSettings);
+
         return services;
     }
 
@@ -85,6 +95,22 @@ public static class ServiceExtensions
         });
 
         return services;
+    }
+
+    private static void ConfigureHealthCheck(this IServiceCollection services)
+    {
+        var databaseSettings = services.GetOptions<DatabaseSettings>(nameof(DatabaseSettings));
+
+        if (string.IsNullOrWhiteSpace(databaseSettings?.ConnectionStrings))
+        {
+            throw new InvalidOperationException("The database connection string is missing or empty. Please verify your configuration.");
+        }
+
+        services.AddHealthChecks()
+                .AddMySql(
+                    connectionString: databaseSettings.ConnectionStrings,
+                    name: "MySql Health",
+                    failureStatus: HealthStatus.Degraded);
     }
 
     private static IServiceCollection ConfigureProductDbContext(this IServiceCollection services, IConfiguration configuration)

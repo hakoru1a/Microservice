@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Saga.Orchestrator", "Saga.O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saga.Orchestrator", "Saga.Orchestrator\Saga.Orchestrator.csproj", "{0268CAEE-C84D-43D4-AD18-B76BB43F1DF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCheck", "HealthCheck\HealthCheck.csproj", "{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,10 @@ Global
 		{0268CAEE-C84D-43D4-AD18-B76BB43F1DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0268CAEE-C84D-43D4-AD18-B76BB43F1DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0268CAEE-C84D-43D4-AD18-B76BB43F1DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,5 +174,6 @@ Global
 		{527B851A-60FA-4107-A7E3-94B92471F0E8} = {69FA1816-A1BE-49A6-82E4-4106EFAEBCE4}
 		{CC48EC49-015C-4E79-AE9C-9C47D60C460F} = {817F5C57-39BB-41AE-AC1C-854CA99D03F7}
 		{0268CAEE-C84D-43D4-AD18-B76BB43F1DF1} = {CC48EC49-015C-4E79-AE9C-9C47D60C460F}
+		{B558A9C8-7596-4EF2-9CAA-98EDEDF0CEE6} = {69FA1816-A1BE-49A6-82E4-4106EFAEBCE4}
 	EndGlobalSection
 EndGlobal

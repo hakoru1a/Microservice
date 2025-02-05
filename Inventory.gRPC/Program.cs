@@ -1,11 +1,12 @@
 using Common.Logging;
+using HealthChecks.UI.Client;
 using Inventory.gRPC.Extensitons;
 using Inventory.gRPC.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog(SeriLogger.Configure);
-
 
 try
 {
@@ -14,9 +15,25 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
 
     var app = builder.Build();
-    app.MapGrpcService<InventoryService>();
-    // Configure the HTTP request pipeline.
-    app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+    app.UseRouting();
+
+    app.UseEndpoints(endpoints =>
+    {
+        // health checks
+        endpoints.MapHealthChecks(pattern:"/hc", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        endpoints.MapGrpcHealthChecksService();
+
+        endpoints.MapGrpcService<InventoryService>();
+
+        endpoints.MapGet(pattern:"/", async context =>
+        {
+            await context.Response.WriteAsync("Communication with gRPC endpoints must be made through");
+        });
+    });
 
     app.Run();
 

@@ -92,7 +92,13 @@ services:
     build:
         context: .
         dockerfile: OCelotAPIGateway/Dockerfile
-
+#healthchecks section
+  healthcheck:
+    image: ${DOCKER_REGISTRY-}healthcheck:${PLATFORM:-linux}-${TAG:-latest}
+    container_name: healthcheck
+    build:
+        context: .
+        dockerfile: HealthCheck/Dockerfile
 #network section
 networks:
   default:
